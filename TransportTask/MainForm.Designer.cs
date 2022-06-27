@@ -138,9 +138,10 @@ namespace TransportTask
             this.txtBxAmountA = new System.Windows.Forms.TextBox();
             this.lblEnterAmountA = new System.Windows.Forms.Label();
             this.grpBxAmountOfABSettings = new System.Windows.Forms.GroupBox();
+            this.btnAmountSettingsSubmit = new System.Windows.Forms.Button();
             this.txtBxAmountB = new System.Windows.Forms.TextBox();
             this.lblEnterAmountB = new System.Windows.Forms.Label();
-            this.btnAmountSettingsSubmit = new System.Windows.Forms.Button();
+            this.btnInitializeFourthTask = new System.Windows.Forms.Button();
             this.grpBxA1B1.SuspendLayout();
             this.grpBxA2B1.SuspendLayout();
             this.grpBxA3B1.SuspendLayout();
@@ -1281,6 +1282,18 @@ namespace TransportTask
             this.grpBxAmountOfABSettings.TabStop = false;
             this.grpBxAmountOfABSettings.Text = "Amount of A/B settings";
             // 
+            // btnAmountSettingsSubmit
+            // 
+            this.btnAmountSettingsSubmit.BackColor = System.Drawing.Color.YellowGreen;
+            this.btnAmountSettingsSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnAmountSettingsSubmit.Location = new System.Drawing.Point(15, 173);
+            this.btnAmountSettingsSubmit.Name = "btnAmountSettingsSubmit";
+            this.btnAmountSettingsSubmit.Size = new System.Drawing.Size(280, 44);
+            this.btnAmountSettingsSubmit.TabIndex = 4;
+            this.btnAmountSettingsSubmit.Text = "Submit";
+            this.btnAmountSettingsSubmit.UseVisualStyleBackColor = false;
+            this.btnAmountSettingsSubmit.Click += new System.EventHandler(this.btnAmountSettingsSubmit_Click);
+            // 
             // txtBxAmountB
             // 
             this.txtBxAmountB.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -1300,17 +1313,18 @@ namespace TransportTask
             this.lblEnterAmountB.TabIndex = 2;
             this.lblEnterAmountB.Text = "Enter B Amount:";
             // 
-            // btnAmountSettingsSubmit
+            // btnInitializeFourthTask
             // 
-            this.btnAmountSettingsSubmit.BackColor = System.Drawing.Color.YellowGreen;
-            this.btnAmountSettingsSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnAmountSettingsSubmit.Location = new System.Drawing.Point(15, 173);
-            this.btnAmountSettingsSubmit.Name = "btnAmountSettingsSubmit";
-            this.btnAmountSettingsSubmit.Size = new System.Drawing.Size(280, 44);
-            this.btnAmountSettingsSubmit.TabIndex = 4;
-            this.btnAmountSettingsSubmit.Text = "Submit";
-            this.btnAmountSettingsSubmit.UseVisualStyleBackColor = false;
-            this.btnAmountSettingsSubmit.Click += new System.EventHandler(this.btnAmountSettingsSubmit_Click);
+            this.btnInitializeFourthTask.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.btnInitializeFourthTask.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnInitializeFourthTask.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnInitializeFourthTask.Location = new System.Drawing.Point(759, 149);
+            this.btnInitializeFourthTask.Name = "btnInitializeFourthTask";
+            this.btnInitializeFourthTask.Size = new System.Drawing.Size(311, 41);
+            this.btnInitializeFourthTask.TabIndex = 88;
+            this.btnInitializeFourthTask.Text = "Initialize Fourth Task";
+            this.btnInitializeFourthTask.UseVisualStyleBackColor = false;
+            this.btnInitializeFourthTask.Click += new System.EventHandler(this.btnInitializeFourthTask_Click);
             // 
             // MainForm
             // 
@@ -1318,6 +1332,7 @@ namespace TransportTask
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1082, 660);
+            this.Controls.Add(this.btnInitializeFourthTask);
             this.Controls.Add(this.grpBxAmountOfABSettings);
             this.Controls.Add(this.btnQuickSolution);
             this.Controls.Add(this.btnCreateCycle);
@@ -1548,6 +1563,7 @@ namespace TransportTask
         private System.Windows.Forms.TextBox txtBxAmountB;
         private System.Windows.Forms.Label lblEnterAmountB;
         private System.Windows.Forms.Button btnAmountSettingsSubmit;
+        private System.Windows.Forms.Button btnInitializeFourthTask;
     }
 }
 

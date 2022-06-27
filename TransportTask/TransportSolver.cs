@@ -107,7 +107,7 @@ namespace TransportTask
         private List<Point> GetCycleRoute(Point cycleStartPoint)
         {
             int iterationsAmount = 0;
-            bool isLastDirectionX = false;
+            CycleDirection cycleDirection = CycleDirection.None;
             List<Point> cycleRoute = new List<Point>();
             cycleRoute.Add(cycleStartPoint);
             Point lastPoint = cycleStartPoint;
@@ -121,29 +121,29 @@ namespace TransportTask
                         if (Values[i, j] == 0)
                             continue;
 
-                        if (lastPoint.X == i && !IsPointContains(cycleRoute, i, j) && (!isLastDirectionX || cycleRoute.Count == 1))
+                        if (lastPoint.X == i && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.Y)
                         {
                             Point newPoint = new Point(i, j);
 
-                            //if (IsCycleDeadEnd(cycleRoute, newPoint, !isLastDirectionX))
-                            //    continue;
-                            
+                            if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.Y))
+                                continue;
+
                             cycleRoute.Add(newPoint);
                             lastPoint = newPoint;
-                            isLastDirectionX = true;
+                            cycleDirection = CycleDirection.Y;
                             i = 0;
                             j = 0;
                         }
-                        else if (lastPoint.Y == j && !IsPointContains(cycleRoute, i, j) && (isLastDirectionX || cycleRoute.Count == 1))
+                        else if (lastPoint.Y == j && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.X)
                         {
                             Point newPoint = new Point(i, j);
 
-                            //if (IsCycleDeadEnd(cycleRoute, newPoint, !isLastDirectionX))
-                            //    continue;
+                            if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.X))
+                                continue;
 
                             cycleRoute.Add(newPoint);
                             lastPoint = newPoint;
-                            isLastDirectionX = false;
+                            cycleDirection = CycleDirection.X;
                             i = 0;
                             j = 0;
                         }
@@ -169,19 +169,19 @@ namespace TransportTask
             return false;
         }
 
-        private bool IsCycleDeadEnd(List<Point> cycleRoute, Point lastPoint, bool isLastDirectionX)
+        private bool IsCycleDeadEnd(List<Point> cycleRoute, Point lastPoint, CycleDirection cycleDirection)
         {
+            if (cycleRoute.Count >= 3 && IsCycleClosed(cycleRoute[0], lastPoint))
+                return false;
+
             for (int i = 0; i < SizeA; ++i)
             {
                 for (int j = 0; j < SizeB; ++j)
                 {
-                    if (cycleRoute.Count >= 3)
-                        IsCycleClosed(cycleRoute[0], new Point(i, j));
-
                     if (Values[i, j] == 0)
                         continue;
 
-                    if (lastPoint.X == i && !IsPointContains(cycleRoute, i, j) && !isLastDirectionX)
+                    if (lastPoint.X == i && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.Y)
                     {
                         Point newPoint = new Point(i, j);
 
@@ -190,7 +190,7 @@ namespace TransportTask
 
                         return false;
                     }
-                    else if (lastPoint.Y == j && !IsPointContains(cycleRoute, i, j) && (isLastDirectionX || cycleRoute.Count == 1))
+                    else if (lastPoint.Y == j && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.X)
                     {
                         Point newPoint = new Point(i, j);
 

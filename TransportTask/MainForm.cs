@@ -73,6 +73,21 @@ namespace TransportTask
             SetTxtBxStartValues();
         }
 
+
+        private void btnInitializeFourthTask_Click(object sender, EventArgs e)
+        {
+            ClearTxtBxTransportValues();
+
+            transportValues = new TransportValues(
+                FourthTaskConstants.POTENTIALS,
+                FourthTaskConstants.TOTAL_A,
+                FourthTaskConstants.TOTAL_B
+                );
+
+            HideFields(transportValues.SizeA, transportValues.SizeB);
+            SetTxtBxStartValues();
+        }
+
         private void btnAmountSettingsSubmit_Click(object sender, EventArgs e)
         {
             if (txtBxAmountA.Text == "" || !char.IsDigit(char.Parse(txtBxAmountA.Text)) ||
