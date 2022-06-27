@@ -107,6 +107,7 @@ namespace TransportTask
         private List<Point> GetCycleRoute(Point cycleStartPoint)
         {
             int iterationsAmount = 0;
+            Point newPoint;
             CycleDirection cycleDirection = CycleDirection.None;
             List<Point> cycleRoute = new List<Point>();
             cycleRoute.Add(cycleStartPoint);
@@ -118,12 +119,12 @@ namespace TransportTask
                 {
                     for (int j = 0; j < SizeB; ++j)
                     {
-                        if (Values[i, j] == 0)
+                        if (Values[i, j] == 0 || IsPointContains(cycleRoute, i, j))
                             continue;
 
-                        if (lastPoint.X == i && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.Y)
+                        if (lastPoint.X == i && cycleDirection != CycleDirection.Y)
                         {
-                            Point newPoint = new Point(i, j);
+                            newPoint = new Point(i, j);
 
                             if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.Y))
                                 continue;
@@ -134,9 +135,9 @@ namespace TransportTask
                             i = 0;
                             j = 0;
                         }
-                        else if (lastPoint.Y == j && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.X)
+                        else if (lastPoint.Y == j && cycleDirection != CycleDirection.X)
                         {
-                            Point newPoint = new Point(i, j);
+                            newPoint = new Point(i, j);
 
                             if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.X))
                                 continue;
@@ -174,27 +175,33 @@ namespace TransportTask
             if (cycleRoute.Count >= 3 && IsCycleClosed(cycleRoute[0], lastPoint))
                 return false;
 
+            Point newPoint;
+            List<Point> cycleRouteCopy = new List<Point>();
+            for (int i = 0; i < cycleRoute.Count; ++i)
+                cycleRouteCopy.Add(cycleRoute[i]);
+            cycleRouteCopy.Add(lastPoint);
+
             for (int i = 0; i < SizeA; ++i)
             {
                 for (int j = 0; j < SizeB; ++j)
                 {
-                    if (Values[i, j] == 0)
+                    if (Values[i, j] == 0 || IsPointContains(cycleRouteCopy, i, j))
                         continue;
 
-                    if (lastPoint.X == i && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.Y)
+                    if (lastPoint.X == i && cycleDirection != CycleDirection.Y)
                     {
-                        Point newPoint = new Point(i, j);
+                        newPoint = new Point(i, j);
 
-                        if (newPoint.X == lastPoint.X && newPoint.Y == lastPoint.Y)
+                        if (IsCycleDeadEnd(cycleRouteCopy, newPoint, CycleDirection.Y))
                             continue;
 
                         return false;
                     }
-                    else if (lastPoint.Y == j && !IsPointContains(cycleRoute, i, j) && cycleDirection != CycleDirection.X)
+                    else if (lastPoint.Y == j && cycleDirection != CycleDirection.X)
                     {
-                        Point newPoint = new Point(i, j);
+                        newPoint = new Point(i, j);
 
-                        if (newPoint.X == lastPoint.X && newPoint.Y == lastPoint.Y)
+                        if (IsCycleDeadEnd(cycleRouteCopy, newPoint, CycleDirection.X))
                             continue;
 
                         return false;

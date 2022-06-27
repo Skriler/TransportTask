@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TransportTask.TaskConstants;
 
@@ -178,6 +171,17 @@ namespace TransportTask
                 return;
             }
 
+            if (transportValues.IsAnswerCorrect())
+            {
+                MessageBox.Show(
+                    "Plan is optimal!",
+                    "Answer correct",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                    );
+                return;
+            }
+
             transportValues.CreateCycleAndRecalculateValues();
             ClearTxtBxTransportValues();
             SetTxtBxTransportValues();
@@ -203,9 +207,9 @@ namespace TransportTask
 
             int iterationsAmount = 0;
 
+            transportValues.CalculateValues();
             do
             {
-                transportValues.CalculateValues();
                 transportValues.CalculatePotentials();
 
                 if (transportValues.IsAnswerCorrect())
