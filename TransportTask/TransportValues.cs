@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using TransportTask.Enums;
 
 namespace TransportTask
 {
@@ -12,7 +13,7 @@ namespace TransportTask
         public int SizeB { get; private set; }
 
         public int[,] Potentials { get; private set; }
-        public int[,] Values { get; private set; }
+        public Cell[,] Values { get; private set; }
         public int[] TotalA { get; private set; }
         public int[] TotalB { get; private set; }
 
@@ -43,13 +44,15 @@ namespace TransportTask
 
         public void CalculateValues()
         {
+            InitializeValues();
             transportSolver = new TransportSolver(
                 Potentials,
                 TotalA,
                 TotalB
                 );
-
-            Values = transportSolver.CalculateValues();
+            
+            Cell[,] TempValues = transportSolver.CalculateValues();
+            Array.Copy(TempValues, Values, TempValues.Length);
         }
 
         public void CalculatePotentials()
@@ -67,9 +70,11 @@ namespace TransportTask
             if (transportSolver == null)
                 return;
 
-            Point maxPotentialValue = FindMaxPotentialValue();
+            Values = new Cell[SizeA, SizeB];
 
-            Values = transportSolver.CreateCycleAndRecalculateValues(maxPotentialValue);
+            Point maxPotentialValue = FindMaxPotentialValue(); 
+            Cell[,] TempValues = transportSolver.CreateCycleAndRecalculateValues(maxPotentialValue);
+            Array.Copy(TempValues, Values, TempValues.Length);
         }
 
         public bool IsAnswerCorrect()
@@ -86,6 +91,19 @@ namespace TransportTask
             return true;
         }
 
+        private void InitializeValues()
+        {
+            Values = new Cell[SizeA, SizeB];
+
+            for (int i = 0; i < SizeA; ++i)
+            {
+                for (int j = 0; j < SizeB; ++j)
+                {
+                    Values[i, j] = new Cell();
+                }
+            }
+        }
+
         private void CalculateUV()
         {
             ValuesU[0] = 0;
@@ -95,10 +113,8 @@ namespace TransportTask
                 {
                     for (int j = 0; j < ValuesV.Length; ++j)
                     {
-                        if (Values[i, j] == 0)
+                        if (Values[i, j].Status == CellStatus.Empty)
                             continue;
-
-                        PotentialValues[i, j] = -1;
 
                         if (ValuesU[i] != EMPTY_V_U_VALUE && ValuesV[j] == EMPTY_V_U_VALUE)
                         {
@@ -137,8 +153,11 @@ namespace TransportTask
             {
                 for (int j = 0; j < ValuesV.Length; ++j)
                 {
-                    if (Values[i, j] != 0)
+                    if (Values[i, j].Status != CellStatus.Empty)
+                    {
+                        PotentialValues[i, j] = -1;
                         continue;
+                    }
 
                     PotentialValues[i, j] = ValuesU[i] + ValuesV[j] - Potentials[i, j];
                 }

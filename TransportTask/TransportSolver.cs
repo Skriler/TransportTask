@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+using TransportTask.Enums;
 
 namespace TransportTask
 {
@@ -13,7 +14,7 @@ namespace TransportTask
         public int SizeB { get; private set; }
 
         public int[,] Potentials { get; private set; }
-        public int[,] Values { get; private set; }
+        public Cell[,] Values { get; private set; }
         public bool[,] IsVisited { get; private set; }
         public int[] TotalA { get; private set; }
         public int[] TotalB { get; private set; }
@@ -32,9 +33,9 @@ namespace TransportTask
             Array.Copy(totalB, TotalB, TotalB.Length);
         }
 
-        public int[,] CalculateValues()
+        public Cell[,] CalculateValues()
         {
-            Values = new int[SizeA, SizeB];
+            InitializeValues();
             IsVisited = new bool[SizeA, SizeB];
 
             int currentSum = 0;
@@ -45,17 +46,25 @@ namespace TransportTask
                 Point minPotentialPos = FindMinPotentialPosition();
                 if (TotalA[minPotentialPos.X] >= TotalB[minPotentialPos.Y])
                 {
-                    Values[minPotentialPos.X, minPotentialPos.Y] = TotalB[minPotentialPos.Y];
-                    TotalA[minPotentialPos.X] -= TotalB[minPotentialPos.Y];
-                    currentSum += TotalB[minPotentialPos.Y];
-                    TotalB[minPotentialPos.Y] = 0;
+                    if (TotalB[minPotentialPos.Y] != 0)
+                    {
+                        Values[minPotentialPos.X, minPotentialPos.Y].Value = TotalB[minPotentialPos.Y];
+                        Values[minPotentialPos.X, minPotentialPos.Y].Status = CellStatus.Filled;
+                        TotalA[minPotentialPos.X] -= TotalB[minPotentialPos.Y];
+                        currentSum += TotalB[minPotentialPos.Y];
+                        TotalB[minPotentialPos.Y] = 0;
+                    }              
                 }
                 else
                 {
-                    Values[minPotentialPos.X, minPotentialPos.Y] = TotalA[minPotentialPos.X];
-                    TotalB[minPotentialPos.Y] -= TotalA[minPotentialPos.X];
-                    currentSum += TotalA[minPotentialPos.X];
-                    TotalA[minPotentialPos.X] = 0;
+                    if (TotalA[minPotentialPos.X] != 0)
+                    {
+                        Values[minPotentialPos.X, minPotentialPos.Y].Value = TotalA[minPotentialPos.X];
+                        Values[minPotentialPos.X, minPotentialPos.Y].Status = CellStatus.Filled;
+                        TotalB[minPotentialPos.Y] -= TotalA[minPotentialPos.X];
+                        currentSum += TotalA[minPotentialPos.X];
+                        TotalA[minPotentialPos.X] = 0;
+                    }
                 }
                 IsVisited[minPotentialPos.X, minPotentialPos.Y] = true;
             } while (currentSum < totalSum);
@@ -63,7 +72,7 @@ namespace TransportTask
             return Values;
         }
 
-        public int[,] CreateCycleAndRecalculateValues(Point cycleStartPoint)
+        public Cell[,] CreateCycleAndRecalculateValues(Point cycleStartPoint)
         {
             List<Point> cycleRoute = GetCycleRoute(cycleStartPoint);
 
@@ -75,12 +84,43 @@ namespace TransportTask
             for (int i = 0; i < cycleRoute.Count; ++i)
             {
                 if (i % 2 == 0)
-                    Values[cycleRoute[i].X, cycleRoute[i].Y] += minValue;
+                {
+                    Values[cycleRoute[i].X, cycleRoute[i].Y].Value += minValue;
+                    Values[cycleRoute[i].X, cycleRoute[i].Y].Status = CellStatus.Filled;
+                }
                 else
-                    Values[cycleRoute[i].X, cycleRoute[i].Y] -= minValue;
+                {
+                    Values[cycleRoute[i].X, cycleRoute[i].Y].Value -= minValue;
+
+                    if (Values[cycleRoute[i].X, cycleRoute[i].Y].Value == 0)
+                        Values[cycleRoute[i].X, cycleRoute[i].Y].Status = CellStatus.Changed;
+                }
             }
 
+            int filledCellsAmount = GetFilledCellsAmount();
+
+            while (filledCellsAmount < SizeA + SizeB - 1)
+            {
+                FillChangedCell();
+                ++filledCellsAmount;
+            }
+
+            SetChangedCellsToEmpty();
+
             return Values;
+        }
+
+        private void InitializeValues()
+        {
+            Values = new Cell[SizeA, SizeB];
+
+            for (int i = 0; i < SizeA; ++i)
+            {
+                for (int j = 0; j < SizeB; ++j)
+                {
+                    Values[i, j] = new Cell();
+                }
+            }
         }
 
         private Point FindMinPotentialPosition()
@@ -119,7 +159,7 @@ namespace TransportTask
                 {
                     for (int j = 0; j < SizeB; ++j)
                     {
-                        if (Values[i, j] == 0 || IsPointContains(cycleRoute, i, j))
+                        if (Values[i, j].Status == CellStatus.Empty || IsPointContains(cycleRoute, i, j))
                             continue;
 
                         if (lastPoint.X == i && cycleDirection != CycleDirection.Y)
@@ -185,7 +225,7 @@ namespace TransportTask
             {
                 for (int j = 0; j < SizeB; ++j)
                 {
-                    if (Values[i, j] == 0 || IsPointContains(cycleRouteCopy, i, j))
+                    if (Values[i, j].Status == CellStatus.Empty || IsPointContains(cycleRouteCopy, i, j))
                         continue;
 
                     if (lastPoint.X == i && cycleDirection != CycleDirection.Y)
@@ -229,13 +269,60 @@ namespace TransportTask
                 if (i % 2 == 0)
                     continue;
 
-                if (Values[points[i].X, points[i].Y] >= minValue)
+                if (Values[points[i].X, points[i].Y].Value >= minValue)
                     continue;
 
-                minValue = Values[points[i].X, points[i].Y];
+                minValue = Values[points[i].X, points[i].Y].Value;
             }
 
             return minValue;
+        }
+
+        private int GetFilledCellsAmount()
+        {
+            int filledCellsAmount = 0;
+
+            for (int i = 0; i < Values.GetLength(0); ++i)
+            {
+                for (int j = 0; j < Values.GetLength(1); ++j)
+                {
+                    if (Values[i, j].Status != CellStatus.Filled)
+                        continue;
+
+                    ++filledCellsAmount;
+                }
+            }
+
+            return filledCellsAmount;
+        }
+
+        private void FillChangedCell()
+        {
+            for (int i = 0; i < Values.GetLength(0); ++i)
+            {
+                for (int j = 0; j < Values.GetLength(1); ++j)
+                {
+                    if (Values[i, j].Status != CellStatus.Changed)
+                        continue;
+
+                    Values[i, j].Status = CellStatus.Filled;
+                    return;
+                }
+            }
+        }
+
+        private void SetChangedCellsToEmpty()
+        {
+            for (int i = 0; i < Values.GetLength(0); ++i)
+            {
+                for (int j = 0; j < Values.GetLength(1); ++j)
+                {
+                    if (Values[i, j].Status != CellStatus.Changed)
+                        continue;
+
+                    Values[i, j].Status = CellStatus.Empty;
+                }
+            }
         }
     }
 }

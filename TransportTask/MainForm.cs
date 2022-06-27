@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using TransportTask.TaskConstants;
+using TransportTask.Enums;
 
 namespace TransportTask
 {
@@ -66,7 +67,6 @@ namespace TransportTask
             SetTxtBxStartValues();
         }
 
-
         private void btnInitializeFourthTask_Click(object sender, EventArgs e)
         {
             ClearTxtBxTransportValues();
@@ -98,10 +98,13 @@ namespace TransportTask
             amountOfA = int.Parse(txtBxAmountA.Text);
             amountOfB = int.Parse(txtBxAmountB.Text);
             
-            if (amountOfA > 5 || amountOfA < 3 || amountOfB > 5 || amountOfB < 3)
+            if (amountOfA > ProjectSettings.MAX_A_AMOUNT || 
+                amountOfA < ProjectSettings.MIN_A_AMOUNT || 
+                amountOfB > ProjectSettings.MAX_B_AMOUNT || 
+                amountOfB < ProjectSettings.MIN_B_AMOUNT)
             {
                 MessageBox.Show(
-                    "Numbers must be between 3 and 5!",
+                    "Numbers must be between " + ProjectSettings.MIN_A_AMOUNT + " and " + ProjectSettings.MAX_A_AMOUNT + "!",
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
@@ -424,7 +427,10 @@ namespace TransportTask
             {
                 for (int j = 0; j < transportValues.SizeB; ++j)
                 {
-                    txtBxsValue[i, j].Text = transportValues.Values[i, j].ToString();
+                    if (transportValues.Values[i, j].Status == CellStatus.Empty)
+                        continue;
+
+                    txtBxsValue[i, j].Text = transportValues.Values[i, j].Value.ToString();
                 }
             }
         }
@@ -457,7 +463,7 @@ namespace TransportTask
                     if (i == 0)
                         lblsB[j].Text = "v" + (j + 1) + "=" + transportValues.ValuesV[j].ToString();
 
-                    if (transportValues.Values[i, j] != 0)
+                    if (transportValues.Values[i, j].Status != CellStatus.Empty)
                         continue;
 
                     txtBxsValue[i, j].Text = "p=" + transportValues.PotentialValues[i, j].ToString();
