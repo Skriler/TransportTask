@@ -19,6 +19,9 @@ namespace TransportTask
         public int[] TotalA { get; private set; }
         public int[] TotalB { get; private set; }
 
+        public int[] TempTotalA { get; private set; }
+        public int[] TempTotalB { get; private set; }
+
         public TransportSolver(int[,] potentials, int[] totalA, int[] totalB)
         {
             SizeA = potentials.GetLength(0);
@@ -35,39 +38,24 @@ namespace TransportTask
 
         public Cell[,] CalculateValues()
         {
-            InitializeValues();
-            IsVisited = new bool[SizeA, SizeB];
-
-            int currentSum = 0;
-            int totalSum = TotalB.Sum();
+            Point zeroPos = new Point(0, 0);
+            int filledCellsAmount;
 
             do
             {
-                Point minPotentialPos = FindMinPotentialPosition();
-                if (TotalA[minPotentialPos.X] >= TotalB[minPotentialPos.Y])
+                FillValuesArray();
+
+                filledCellsAmount = GetFilledCellsAmount();
+
+                if (filledCellsAmount == SizeA + SizeB - 1)
+                    break;
+
+                while (filledCellsAmount < SizeA + SizeB - 1)
                 {
-                    if (TotalB[minPotentialPos.Y] != 0)
-                    {
-                        Values[minPotentialPos.X, minPotentialPos.Y].Value = TotalB[minPotentialPos.Y];
-                        Values[minPotentialPos.X, minPotentialPos.Y].Status = CellStatus.Filled;
-                        TotalA[minPotentialPos.X] -= TotalB[minPotentialPos.Y];
-                        currentSum += TotalB[minPotentialPos.Y];
-                        TotalB[minPotentialPos.Y] = 0;
-                    }              
+                    zeroPos = AddZeroInValues(zeroPos);
+                    ++filledCellsAmount;
                 }
-                else
-                {
-                    if (TotalA[minPotentialPos.X] != 0)
-                    {
-                        Values[minPotentialPos.X, minPotentialPos.Y].Value = TotalA[minPotentialPos.X];
-                        Values[minPotentialPos.X, minPotentialPos.Y].Status = CellStatus.Filled;
-                        TotalB[minPotentialPos.Y] -= TotalA[minPotentialPos.X];
-                        currentSum += TotalA[minPotentialPos.X];
-                        TotalA[minPotentialPos.X] = 0;
-                    }
-                }
-                IsVisited[minPotentialPos.X, minPotentialPos.Y] = true;
-            } while (currentSum < totalSum);
+            } while (!IsContainCycle(filledCellsAmount));
 
             return Values;
         }
@@ -101,11 +89,11 @@ namespace TransportTask
 
             while (filledCellsAmount < SizeA + SizeB - 1)
             {
-                FillChangedCell();
+                SetChangedCellsToReqStatus(CellStatus.Filled, true);
                 ++filledCellsAmount;
             }
 
-            SetChangedCellsToEmpty();
+            SetChangedCellsToReqStatus(CellStatus.Empty, false);
 
             return Values;
         }
@@ -121,6 +109,51 @@ namespace TransportTask
                     Values[i, j] = new Cell();
                 }
             }
+        }
+
+        private void FillValuesArray()
+        {
+            InitializeValues();
+            IsVisited = new bool[SizeA, SizeB];
+
+            TempTotalA = new int[SizeA];
+            TempTotalB = new int[SizeB];
+            Array.Copy(TotalA, TempTotalA, TotalA.Length);
+            Array.Copy(TotalB, TempTotalB, TotalB.Length);
+
+            int currentSum = 0;
+            int totalSum = TotalB.Sum();
+
+            do
+            {
+                Point minPotentialPos = FindMinPotentialPosition();
+                if (TotalA[minPotentialPos.X] >= TotalB[minPotentialPos.Y])
+                {
+                    if (TotalB[minPotentialPos.Y] != 0)
+                    {
+                        Values[minPotentialPos.X, minPotentialPos.Y].Value = TotalB[minPotentialPos.Y];
+                        Values[minPotentialPos.X, minPotentialPos.Y].Status = CellStatus.Filled;
+                        TotalA[minPotentialPos.X] -= TotalB[minPotentialPos.Y];
+                        currentSum += TotalB[minPotentialPos.Y];
+                        TotalB[minPotentialPos.Y] = 0;
+                    }
+                }
+                else
+                {
+                    if (TotalA[minPotentialPos.X] != 0)
+                    {
+                        Values[minPotentialPos.X, minPotentialPos.Y].Value = TotalA[minPotentialPos.X];
+                        Values[minPotentialPos.X, minPotentialPos.Y].Status = CellStatus.Filled;
+                        TotalB[minPotentialPos.Y] -= TotalA[minPotentialPos.X];
+                        currentSum += TotalA[minPotentialPos.X];
+                        TotalA[minPotentialPos.X] = 0;
+                    }
+                }
+                IsVisited[minPotentialPos.X, minPotentialPos.Y] = true;
+            } while (currentSum < totalSum);
+
+            TotalA = TempTotalA;
+            TotalB = TempTotalB;
         }
 
         private Point FindMinPotentialPosition()
@@ -142,6 +175,62 @@ namespace TransportTask
             }
 
             return minPotentialPos;
+        }
+
+        private Point AddZeroInValues(Point zeroPos)
+        {
+            if (zeroPos.X >= SizeA || zeroPos.Y >= SizeB)
+                return zeroPos;
+
+            do
+            {
+                if (Values[zeroPos.X, zeroPos.Y].Status != CellStatus.Empty)
+                {
+                    zeroPos = AddOnePos(zeroPos);
+                }
+                else
+                {
+                    Values[zeroPos.X, zeroPos.Y].Value = 0;
+                    Values[zeroPos.X, zeroPos.Y].Status = CellStatus.Filled;
+                    zeroPos = AddOnePos(zeroPos);
+                    return zeroPos;
+                }
+            } while (true);
+        }
+
+        private Point AddOnePos(Point point)
+        {
+            ++point.Y;
+
+            if (point.Y >= SizeB)
+            {
+                ++point.X;
+                point.Y = 0;
+
+                if (point.X >= SizeB)
+                    return point;
+            }
+
+            return point;
+        }
+
+        private bool IsContainCycle(int minValueAmount)
+        {
+            List<Point> cycleRoute = new List<Point>();
+
+            for (int i = 0; i < SizeA; ++i)
+            {
+                for (int j = 0; j < SizeB; ++j)
+                {
+                    if (Values[i, j].Status != CellStatus.Empty)
+                        continue;
+
+                    if (!IsCycleDeadEnd(cycleRoute, new Point(i, j), CycleDirection.None, minValueAmount))
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         private List<Point> GetCycleRoute(Point cycleStartPoint)
@@ -166,7 +255,7 @@ namespace TransportTask
                         {
                             newPoint = new Point(i, j);
 
-                            if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.Y))
+                            if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.Y, 3))
                                 continue;
 
                             cycleRoute.Add(newPoint);
@@ -179,7 +268,7 @@ namespace TransportTask
                         {
                             newPoint = new Point(i, j);
 
-                            if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.X))
+                            if (IsCycleDeadEnd(cycleRoute, newPoint, CycleDirection.X, 3))
                                 continue;
 
                             cycleRoute.Add(newPoint);
@@ -210,9 +299,9 @@ namespace TransportTask
             return false;
         }
 
-        private bool IsCycleDeadEnd(List<Point> cycleRoute, Point lastPoint, CycleDirection cycleDirection)
+        private bool IsCycleDeadEnd(List<Point> cycleRoute, Point lastPoint, CycleDirection cycleDirection, int minValueAmount)
         {
-            if (cycleRoute.Count >= 3 && IsCycleClosed(cycleRoute[0], lastPoint))
+            if (cycleRoute.Count >= minValueAmount && IsCycleClosed(cycleRoute[0], lastPoint))
                 return false;
 
             Point newPoint;
@@ -232,7 +321,7 @@ namespace TransportTask
                     {
                         newPoint = new Point(i, j);
 
-                        if (IsCycleDeadEnd(cycleRouteCopy, newPoint, CycleDirection.Y))
+                        if (IsCycleDeadEnd(cycleRouteCopy, newPoint, CycleDirection.Y, minValueAmount))
                             continue;
 
                         return false;
@@ -241,7 +330,7 @@ namespace TransportTask
                     {
                         newPoint = new Point(i, j);
 
-                        if (IsCycleDeadEnd(cycleRouteCopy, newPoint, CycleDirection.X))
+                        if (IsCycleDeadEnd(cycleRouteCopy, newPoint, CycleDirection.X, minValueAmount))
                             continue;
 
                         return false;
@@ -296,7 +385,7 @@ namespace TransportTask
             return filledCellsAmount;
         }
 
-        private void FillChangedCell()
+        private void SetChangedCellsToReqStatus(CellStatus reqStatus, bool isOnlyOneCell)
         {
             for (int i = 0; i < Values.GetLength(0); ++i)
             {
@@ -305,22 +394,10 @@ namespace TransportTask
                     if (Values[i, j].Status != CellStatus.Changed)
                         continue;
 
-                    Values[i, j].Status = CellStatus.Filled;
-                    return;
-                }
-            }
-        }
+                    Values[i, j].Status = reqStatus;
 
-        private void SetChangedCellsToEmpty()
-        {
-            for (int i = 0; i < Values.GetLength(0); ++i)
-            {
-                for (int j = 0; j < Values.GetLength(1); ++j)
-                {
-                    if (Values[i, j].Status != CellStatus.Changed)
-                        continue;
-
-                    Values[i, j].Status = CellStatus.Empty;
+                    if (isOnlyOneCell)
+                        return;
                 }
             }
         }

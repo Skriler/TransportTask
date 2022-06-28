@@ -242,7 +242,7 @@ namespace TransportTask
             if (transportValues.IsAnswerCorrect())
             {
                 MessageBox.Show(
-                    "Plan is optimal!",
+                    "Plan is optimal!\n F(x) = " + transportValues.GetTargetFunction() + ".",
                     "Answer correct",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information

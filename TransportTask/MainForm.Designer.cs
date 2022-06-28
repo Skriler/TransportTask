@@ -582,7 +582,7 @@ namespace TransportTask
             this.grpBxA1B2.Size = new System.Drawing.Size(77, 100);
             this.grpBxA1B2.TabIndex = 54;
             this.grpBxA1B2.TabStop = false;
-            this.grpBxA1B2.Text = "A1 B1";
+            this.grpBxA1B2.Text = "A1 B2";
             // 
             // txtBoxValueA1B2
             // 
@@ -1161,9 +1161,9 @@ namespace TransportTask
             this.btnCalculateValues.BackColor = System.Drawing.Color.YellowGreen;
             this.btnCalculateValues.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnCalculateValues.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnCalculateValues.Location = new System.Drawing.Point(759, 507);
+            this.btnCalculateValues.Location = new System.Drawing.Point(743, 520);
             this.btnCalculateValues.Name = "btnCalculateValues";
-            this.btnCalculateValues.Size = new System.Drawing.Size(100, 61);
+            this.btnCalculateValues.Size = new System.Drawing.Size(105, 61);
             this.btnCalculateValues.TabIndex = 80;
             this.btnCalculateValues.Text = "Calculate Values";
             this.btnCalculateValues.UseVisualStyleBackColor = false;
@@ -1174,9 +1174,9 @@ namespace TransportTask
             this.btnClearValues.BackColor = System.Drawing.Color.Coral;
             this.btnClearValues.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnClearValues.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnClearValues.Location = new System.Drawing.Point(759, 587);
+            this.btnClearValues.Location = new System.Drawing.Point(743, 587);
             this.btnClearValues.Name = "btnClearValues";
-            this.btnClearValues.Size = new System.Drawing.Size(100, 61);
+            this.btnClearValues.Size = new System.Drawing.Size(105, 61);
             this.btnClearValues.TabIndex = 81;
             this.btnClearValues.Text = "Clear Values";
             this.btnClearValues.UseVisualStyleBackColor = false;
@@ -1187,9 +1187,9 @@ namespace TransportTask
             this.btnCalculatePotentials.BackColor = System.Drawing.Color.YellowGreen;
             this.btnCalculatePotentials.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnCalculatePotentials.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnCalculatePotentials.Location = new System.Drawing.Point(864, 507);
+            this.btnCalculatePotentials.Location = new System.Drawing.Point(854, 520);
             this.btnCalculatePotentials.Name = "btnCalculatePotentials";
-            this.btnCalculatePotentials.Size = new System.Drawing.Size(100, 61);
+            this.btnCalculatePotentials.Size = new System.Drawing.Size(105, 61);
             this.btnCalculatePotentials.TabIndex = 82;
             this.btnCalculatePotentials.Text = "Calculate Potentials";
             this.btnCalculatePotentials.UseVisualStyleBackColor = false;
@@ -1201,9 +1201,9 @@ namespace TransportTask
             this.btnCheckAnswer.Cursor = System.Windows.Forms.Cursors.Default;
             this.btnCheckAnswer.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnCheckAnswer.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnCheckAnswer.Location = new System.Drawing.Point(970, 587);
+            this.btnCheckAnswer.Location = new System.Drawing.Point(965, 587);
             this.btnCheckAnswer.Name = "btnCheckAnswer";
-            this.btnCheckAnswer.Size = new System.Drawing.Size(100, 61);
+            this.btnCheckAnswer.Size = new System.Drawing.Size(105, 61);
             this.btnCheckAnswer.TabIndex = 83;
             this.btnCheckAnswer.Text = "Check Answer";
             this.btnCheckAnswer.UseVisualStyleBackColor = false;
@@ -1227,9 +1227,9 @@ namespace TransportTask
             this.btnCreateCycle.BackColor = System.Drawing.Color.YellowGreen;
             this.btnCreateCycle.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnCreateCycle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnCreateCycle.Location = new System.Drawing.Point(970, 507);
+            this.btnCreateCycle.Location = new System.Drawing.Point(965, 520);
             this.btnCreateCycle.Name = "btnCreateCycle";
-            this.btnCreateCycle.Size = new System.Drawing.Size(100, 61);
+            this.btnCreateCycle.Size = new System.Drawing.Size(105, 61);
             this.btnCreateCycle.TabIndex = 85;
             this.btnCreateCycle.Text = "Create Cycle";
             this.btnCreateCycle.UseVisualStyleBackColor = false;
@@ -1240,9 +1240,9 @@ namespace TransportTask
             this.btnQuickSolution.BackColor = System.Drawing.Color.LightPink;
             this.btnQuickSolution.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnQuickSolution.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnQuickSolution.Location = new System.Drawing.Point(865, 587);
+            this.btnQuickSolution.Location = new System.Drawing.Point(854, 587);
             this.btnQuickSolution.Name = "btnQuickSolution";
-            this.btnQuickSolution.Size = new System.Drawing.Size(100, 61);
+            this.btnQuickSolution.Size = new System.Drawing.Size(105, 61);
             this.btnQuickSolution.TabIndex = 86;
             this.btnQuickSolution.Text = "Quick Solution";
             this.btnQuickSolution.UseVisualStyleBackColor = false;

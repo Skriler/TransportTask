@@ -91,6 +91,24 @@ namespace TransportTask
             return true;
         }
 
+        public int GetTargetFunction()
+        {
+            int result = 0;
+
+            for (int i = 0; i < SizeA; ++i)
+            {
+                for (int j = 0; j < SizeB; ++j)
+                {
+                    if (Values[i, j].Status != CellStatus.Filled)
+                        continue;
+
+                    result += Values[i, j].Value * Potentials[i, j];
+                }
+            }
+
+            return result;
+        }
+
         private void InitializeValues()
         {
             Values = new Cell[SizeA, SizeB];
